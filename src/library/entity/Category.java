@@ -110,12 +110,12 @@ public class Category implements IEntity, Serializable {
                 String nameCatalog = scanner.nextLine();
                 boolean isExist = false;
                 if (nameCatalog.length() < 6 || nameCatalog.length() > 30) {
-                    System.err.println("Tên thể loại phải có từ 6 - 30 kí tự");
+                    printErrRed("Tên thể loại phải có từ 6 - 30 kí tự");
                 } else {
                     if (categoryList.size() > 0) {
                         for (Category category : categoryList) {
                             if (category.getName().equals(nameCatalog)) {
-                                System.err.println("Tên bạn nhập đã tồn tại vui lòng nhập tên khác");
+                                printErrRed("Tên bạn nhập đã tồn tại vui lòng nhập tên khác");
                                 isExist = true;
                             }
                         }
@@ -164,7 +164,8 @@ public class Category implements IEntity, Serializable {
      */
     public void update() {
         while (true) {
-            System.out.println(Color.BLUE_BOLD_BRIGHT + "Bạn có muốn cập nhật tên thể loại sách không ?" + Color.RESET);
+            System.out.println(Color.BLUE_BOLD_BRIGHT
+                    + "Bạn có muốn cập nhật tên thể loại sách không ?" + Color.RESET);
             System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
                     Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
             try {
@@ -183,7 +184,8 @@ public class Category implements IEntity, Serializable {
             }
         }
         while (true) {
-            System.out.println(Color.BLUE_BOLD_BRIGHT + "Bạn có muốn cập nhật trạng thái sách không ?" + Color.RESET);
+            System.out.println(Color.BLUE_BOLD_BRIGHT
+                    + "Bạn có muốn cập nhật trạng thái sách không ?" + Color.RESET);
             System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
                     Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
             try {

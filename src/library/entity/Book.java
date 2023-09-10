@@ -305,7 +305,7 @@ public class Book implements IEntity, Serializable {
     }
 
     /**
-     * desName():  description a book
+     * desName()  description a book
      */
     public void desName() {
         System.out.print("Nhập mô tả sách: ");
@@ -314,7 +314,7 @@ public class Book implements IEntity, Serializable {
             try {
                 this.description = scanner.nextLine();
                 if (this.description.trim().length() < 1) {
-                    printErrRed("Mô tả sách không được để trống !");
+                    System.out.println(Color.RED + "Mô tả sách không được để trống !" + Color.RESET);
                 } else {
                     System.out.println(Color.GREEN_BOLD_BRIGHT + "Ok ✓" + Color.RESET);
                     checkdescription = false;
