@@ -18,10 +18,8 @@ public class LibraryManagement {
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        if (categoryList != null && bookList != null) {
-            categoryList = IOFile.readDataFromFileCategories();
-            bookList = IOFile.readDataFromFileBooks();
-        }
+        categoryList = IOFile.readDataFromFileCategories();
+        bookList = IOFile.readDataFromFileBooks();
         do {
             System.out.print(Color.PURPLE_BOLD_BRIGHT +
                     "\n⁜⁜⁜⁜⁜⁜ QUẢN LÝ THƯ VIỆN ⁜⁜⁜⁜⁜⁜\n" + Color.CYAN_BOLD_BRIGHT +
@@ -40,18 +38,18 @@ public class LibraryManagement {
                         if (categoryList.size() > 0) {
                             BookManagement.bookManagement();
                         } else {
-                            System.out.println(Color.YELLOW_BOLD_BRIGHT +
-                                    "Hiện tại danh sách thể loại trống vui lòng thêm thể loại trước !"
+                            System.out.println(Color.RED_BOLD +
+                                    " Hiện tại danh sách thể loại trống\n  Vui lòng thêm thể loại trước !"
                                     + Color.RESET);
                         }
                         break;
                     case 3:
                         System.exit(0);
                     default:
-                        System.err.println("Vui lòng chọn số trong khoảng 1 - 3 !");
+                        System.out.println(Color.RED + "Vui lòng chọn số trong khoảng 1 - 3 !\n" + Color.RESET);
                 }
             } catch (NumberFormatException numberFormatException) {
-                System.err.println("Lỗi khi nhập kí tự không phải số !");
+                System.out.println(Color.RED + "Lỗi khi nhập kí tự không phải số !\n" + Color.RESET);
             } catch (Exception exception) {
                 System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }

@@ -6,9 +6,12 @@ import library.entity.Book;
 import java.io.*;
 import java.util.List;
 
+import static library.run.LibraryManagement.bookList;
+import static library.run.LibraryManagement.categoryList;
+
 public class IOFile {
     private static final String CATEGORY_FILE = "categories.txt";
-    private static final String BOOK_FILE = "book.txt";
+    private static final String BOOK_FILE = "books.txt";
 
     /**
      * @param fileName: name of file
@@ -63,7 +66,12 @@ public class IOFile {
             ois = new ObjectInputStream(fis);
             dataList = (List<T>) ois.readObject();
         } catch (FileNotFoundException fileNotFoundException) {
-            System.err.println("Không tồn tại file");
+//            System.err.println("Không tồn tại file");
+            if (fileName.equals(BOOK_FILE)) {
+                writeDataToFileBooks(bookList);
+            } else {
+                writeDataToFileCategories(categoryList);
+            }
         } catch (IOException ioException) {
             System.err.println("Lỗi khi đọc file");
         } catch (Exception exception) {

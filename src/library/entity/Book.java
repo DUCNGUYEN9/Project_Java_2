@@ -5,6 +5,7 @@ import library.border.Border;
 import library.interfaceentity.IEntity;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 
 import static library.run.LibraryManagement.*;
@@ -101,8 +102,8 @@ public class Book implements IEntity, Serializable {
         publisherName();
         yearBook();
         desName();
-        System.out.print(Color.YELLOW_BOLD_BRIGHT +
-                "‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥\n" + Color.RESET);
+        System.out.print(Color.GREEN +
+                "‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥\n" + Color.RESET);
     }
 
     /**
@@ -114,14 +115,34 @@ public class Book implements IEntity, Serializable {
         do {
             //print table catalog
             int stt = 1;
+            DecimalFormat df = new DecimalFormat("0000");
             Border.borderTable(46);
             System.out.print(Border.starBorder());
             System.out.printf(Color.GREEN_BOLD_BRIGHT + "\t%-5s %-12s %-20s %s\n", "STT", "MÃ ID",
                     "TÊN THỂ LOẠI" + Color.RESET, Border.starBorder());
             for (Category ca : categoryList) {
-                System.out.print(Border.starBorder());
-                System.out.printf(Color.WHITE_BOLD_BRIGHT + "\t%-5d %-12d %-20s %s\n", stt++, ca.getId(),
-                        ca.getName() + Color.RESET, Border.starBorder());
+                boolean firstLine = true;
+                String longType = ca.getName();
+                String[] typeLines = longType.split("(?<=.{" + 13 + "})(?=\\s)", 2);
+                if (longType.length() < 16) {
+                    System.out.print(Border.starBorder());
+                    System.out.printf(Color.WHITE_BOLD_BRIGHT + "\t%-5d %-12s %-20s %s\n",
+                            stt++, df.format(ca.getId()), typeLines[0].trim() + Color.RESET, Border.starBorder());
+                } else {
+                    for (String typeLine : typeLines) {
+                        System.out.print(Border.starBorder());
+                        if (firstLine) {
+                            System.out.printf(Color.WHITE_BOLD_BRIGHT + "\t%-5d %-12s %-20s %s\n",
+                                    stt++, df.format(ca.getId()), typeLine.trim()
+                                            + Color.RESET, Border.starBorder());
+                            firstLine = false;
+                        } else {
+                            System.out.printf(Color.WHITE_BOLD_BRIGHT + "\t%-5s %-12s %-20s %s\n",
+                                    " ", " ", typeLine.trim()
+                                            + Color.RESET, Border.starBorder());
+                        }
+                    }
+                }
             }
             Border.borderTable(46);
             try {
@@ -129,15 +150,15 @@ public class Book implements IEntity, Serializable {
                         "Hãy chọn STT theo danh sách thể loại sách: " + Color.RESET);
                 int number = Integer.parseInt(scanner.nextLine());
                 if (number > categoryList.size()) {
-                    System.out.println(Color.RED + "Số bạn chọn không có trong danh sách !" + Color.RESET);
+                    printErrRed("Số bạn chọn không có trong danh sách !");
                 } else {
                     this.categoryId = categoryList.get(number - 1).getId();
                     checkChoice = false;
                 }
             } catch (NumberFormatException nfe) {
-                System.err.println("Lỗi khi nhập kí tự không phải số !");
+                printErrRed("Lỗi khi nhập kí tự không phải số !");
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }
         } while (checkChoice);
     }
@@ -146,21 +167,21 @@ public class Book implements IEntity, Serializable {
      * uniqueBookId(): book Id only one
      */
     public void uniqueBookId() {
-        System.out.print("Nhập mã sách (bắt đầu bằng 'B'): ");
+        System.out.print("Nhập mã sách (4 ký tự bắt đầu bằng 'B'): ");
         boolean checkId = true;
         do {
             try {
                 this.id = scanner.nextLine();
                 boolean isExist = false;
                 if (this.id.length() != 4) {
-                    System.err.println("Mã Id phải có độ dài 4 kí tự !");
+                    printErrRed("Mã Id phải có độ dài 4 kí tự !");
                 } else if (!this.id.startsWith("B")) {
-                    System.err.println("Mã Id phải bắt đầu bằng 'B' !");
+                    printErrRed("Mã Id phải bắt đầu bằng 'B' !");
                 } else {
                     if (categoryList.size() > 0) {
                         for (Book book : bookList) {
                             if (book.getId().equals(this.id)) {
-                                System.err.println("Mã bạn nhập đã tồn tại, vui lòng nhập mã khác !");
+                                printErrRed("Mã bạn nhập đã tồn tại, vui lòng nhập mã khác !");
                                 isExist = true;
                             }
                         }
@@ -174,7 +195,7 @@ public class Book implements IEntity, Serializable {
                     }
                 }
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }
         } while (checkId);
     }
@@ -190,12 +211,12 @@ public class Book implements IEntity, Serializable {
                 String nameBook = scanner.nextLine();
                 boolean isExist = false;
                 if (nameBook.length() < 6 || nameBook.length() > 50) {
-                    System.err.println("Tiêu đề sách phải có từ 6 - 50 kí tự !");
+                    printErrRed("Tiêu đề sách phải có từ 6 - 50 kí tự !");
                 } else {
                     if (categoryList.size() > 0) {
                         for (Book book : bookList) {
                             if (book.getTitle().equals(nameBook)) {
-                                System.err.println("Tiêu đề sách bạn nhập đã tồn tại !");
+                                printErrRed("Tiêu đề sách bạn nhập đã tồn tại !");
                                 isExist = true;
                             }
                         }
@@ -211,7 +232,7 @@ public class Book implements IEntity, Serializable {
                     }
                 }
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }
         } while (checkTitle);
     }
@@ -226,18 +247,17 @@ public class Book implements IEntity, Serializable {
             try {
                 this.author = scanner.nextLine();
                 if (this.author.trim().length() < 1) {
-                    System.err.println("Tên tác giả không được bỏ trống");
+                    printErrRed("Tên tác giả không được bỏ trống !");
                 } else {
                     System.out.println(Color.GREEN_BOLD_BRIGHT + "Ok ✓" + Color.RESET);
                     checkAuthor = false;
                 }
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
-
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }
         } while (checkAuthor);
-
     }
+
     /**
      * publisherName(): publisher of book
      */
@@ -248,14 +268,13 @@ public class Book implements IEntity, Serializable {
             try {
                 this.publisher = scanner.nextLine();
                 if (this.publisher.trim().length() < 1) {
-                    System.err.println("Tên nhà xuất bản không được để trống");
+                    printErrRed("Tên nhà xuất bản không được để trống !");
                 } else {
                     System.out.println(Color.GREEN_BOLD_BRIGHT + "Ok ✓" + Color.RESET);
                     checkpublisher = false;
                 }
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
-
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }
         } while (checkpublisher);
     }
@@ -272,16 +291,15 @@ public class Book implements IEntity, Serializable {
             try {
                 this.year = Integer.parseInt(scanner.nextLine());
                 if (this.year < 1970 || this.year > yearCurrent) {
-                    System.err.printf("Năm xuất bản từ năm 1970 - %d\n", yearCurrent);
+                    System.out.printf(Color.RED + "Năm xuất bản từ năm 1970 - %d\n" + Color.RESET, yearCurrent);
                 } else {
                     System.out.println(Color.GREEN_BOLD_BRIGHT + "Ok ✓" + Color.RESET);
                     checkYear = false;
                 }
             } catch (NumberFormatException numberFormatException) {
-                System.err.println("Lỗi khi nhập năm không được kí tự !");
+                printErrRed("Lỗi khi nhập kí tự không phải số !");
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
-
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }
         } while (checkYear);
     }
@@ -296,13 +314,13 @@ public class Book implements IEntity, Serializable {
             try {
                 this.description = scanner.nextLine();
                 if (this.description.trim().length() < 1) {
-                    System.err.println("Mô tả sách không được để trống !");
+                    printErrRed("Mô tả sách không được để trống !");
                 } else {
                     System.out.println(Color.GREEN_BOLD_BRIGHT + "Ok ✓" + Color.RESET);
                     checkdescription = false;
                 }
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
 
             }
         } while (checkdescription);
@@ -312,11 +330,111 @@ public class Book implements IEntity, Serializable {
      * update(): update a book
      */
     public void update() {
-        uniqueBookTitle();
-        authorName();
-        publisherName();
-        yearBook();
-        desName();
+        while (true) {
+            System.out.println(Color.BLUE_BOLD_BRIGHT + "Bạn có muốn cập nhật tiêu đề sách không ?" + Color.RESET);
+            System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
+                    Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
+            try {
+                int n = Integer.parseInt(scanner.nextLine());
+                if (n == 1) {
+                    uniqueBookTitle();
+                    break;
+                } else if (n == 2) {
+                    System.out.println(Color.YELLOW_BOLD + "Không thay đổi ◯" + Color.RESET);
+                    break;
+                } else {
+                    printErrRed("Vui lòng nhập 1 hoặc 2");
+                }
+            } catch (NumberFormatException nfe) {
+                printErrRed("Lỗi khi nhập kí tự không phải số !\n");
+            }
+        }
+        while (true) {
+            System.out.println(Color.BLUE_BOLD_BRIGHT
+                    + "Bạn có muốn cập nhật tên tác giả sách không ?" + Color.RESET);
+            System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
+                    Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
+            try {
+                int n = Integer.parseInt(scanner.nextLine());
+                if (n == 1) {
+                    authorName();
+                    break;
+                } else if (n == 2) {
+                    System.out.println(Color.YELLOW_BOLD + "Không thay đổi ◯" + Color.RESET);
+                    break;
+                } else {
+                    printErrRed("Vui lòng nhập 1 hoặc 2\n");
+                }
+            } catch (NumberFormatException nfe) {
+                printErrRed("Lỗi khi nhập kí tự không phải số !\n");
+            }
+        }
+        while (true) {
+            System.out.println(Color.BLUE_BOLD_BRIGHT
+                    + "Bạn có muốn cập nhật nhà xuất bản không ?" + Color.RESET);
+            System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
+                    Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
+            try {
+                int n = Integer.parseInt(scanner.nextLine());
+                if (n == 1) {
+                    publisherName();
+                    break;
+                } else if (n == 2) {
+                    System.out.println(Color.YELLOW_BOLD + "Không thay đổi ◯" + Color.RESET);
+                    break;
+                } else {
+                    printErrRed("Vui lòng nhập 1 hoặc 2\n");
+                }
+            } catch (NumberFormatException nfe) {
+                printErrRed("Lỗi khi nhập kí tự không phải số !\n");
+            }
+        }
+        while (true) {
+            System.out.println(Color.BLUE_BOLD_BRIGHT
+                    + "Bạn có muốn cập nhật năm xuất bản không ?" + Color.RESET);
+            System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
+                    Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
+            try {
+                int n = Integer.parseInt(scanner.nextLine());
+                if (n == 1) {
+                    yearBook();
+                    break;
+                } else if (n == 2) {
+                    System.out.println(Color.YELLOW_BOLD + "Không thay đổi ◯" + Color.RESET);
+                    break;
+                } else {
+                    printErrRed("Vui lòng nhập 1 hoặc 2\n");
+                }
+            } catch (NumberFormatException nfe) {
+                printErrRed("Lỗi khi nhập kí tự không phải số !\n");
+            }
+        }
+        while (true) {
+            System.out.println(Color.BLUE_BOLD_BRIGHT
+                    + "Bạn có muốn cập nhật mô tả không ?" + Color.RESET);
+            System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
+                    Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
+            try {
+                int n = Integer.parseInt(scanner.nextLine());
+                if (n == 1) {
+                    desName();
+                    break;
+                } else if (n == 2) {
+                    System.out.println(Color.YELLOW_BOLD + "Không thay đổi ◯" + Color.RESET);
+                    break;
+                } else {
+                    printErrRed("Vui lòng nhập 1 hoặc 2\n");
+                }
+            } catch (NumberFormatException nfe) {
+                printErrRed("Lỗi khi nhập kí tự không phải số !\n");
+            }
+        }
+    }
+    /**
+     * @param message print error
+     */
+    public static void printErrRed(String message) {
+        System.out.println(Color.RED + message + Color.RESET);
     }
 
     /**
@@ -325,57 +443,53 @@ public class Book implements IEntity, Serializable {
      */
     @Override
     public void output() {
-
         String longTitle = this.title;
         String longDes = this.description;
-        int maxLineLength = 15;
-
-        String[] titleLines = longTitle.split("(?<=\\G.{" + maxLineLength + "})");
-        String[] desLines = longDes.split("(?<=\\G.{" + maxLineLength + "})");
-
-        if (this.title.length() < 16 && this.description.length() < 16) {
-            System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-15s %-16s %-15d %-22s %s\n",
-                    " ", this.id, titleLines[0], this.author, this.publisher
+        int maxLineLength = 14;
+//        String[] titleLines = longTitle.split("(?<=\\G.{" + maxLineLength + "})");
+        String[] titleLines = longTitle.split("(?<=.{" + maxLineLength + "})(?=\\s)", 2);
+        String[] desLines = longDes.split("(?<=.{" + maxLineLength + "})(?=\\s)", 2);
+        if (longTitle.length() < 16 && longDes.length() < 16) {
+            System.out.print(Border.starBorder());
+            System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-20s %-16s %-15d %-22s %s\n",
+                    "↳", this.id, titleLines[0], this.author, this.publisher
                     , this.year, desLines[0] + Color.RESET, Border.starBorder());
         } else {
             //title and description wrap lines
             boolean firstLine = true;
             if (titleLines.length < desLines.length) {
                 for (int i = 0; i < desLines.length; i++) {
+                    System.out.print(Border.starBorder());
                     if (firstLine) {
-                        System.out.print(Border.starBorder());
-                        System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-15s %-16s %-15s %-22s %s\n",
-                                " ", this.id, (i < titleLines.length ? titleLines[i] : "")
+                        System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-20s %-16s %-15s %-22s %s\n",
+                                "↳", this.id, (i < titleLines.length ? titleLines[i] : "").trim()
                                 , this.author, this.publisher
-                                , this.year, desLines[i] + Color.RESET, Border.starBorder());
+                                , this.year, desLines[i].trim() + Color.RESET, Border.starBorder());
                         firstLine = false;
                     } else {
-                        System.out.print(Border.starBorder());
-                        System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-15s %-16s %-15s %-22s %s\n",
-                                " ", " ", (i < titleLines.length ? titleLines[i] : ""),
-                                " ", " ", " ", desLines[i] + Color.RESET, Border.starBorder());
+                        System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-20s %-16s %-15s %-22s %s\n",
+                                " ", " ", (i < titleLines.length ? titleLines[i] : "").trim(),
+                                " ", " ", " ", desLines[i].trim() + Color.RESET, Border.starBorder());
                     }
                 }
             } else {
                 for (int i = 0; i < titleLines.length; i++) {
+                    System.out.print(Border.starBorder());
                     if (firstLine) {
-                        System.out.print(Border.starBorder());
                         System.out.printf(Color.WHITE_BRIGHT
-                                        + "\t%-15s %-10s %-20s %-15s %-16s %-15s %-22s %s\n",
-                                " ", this.id, titleLines[i], this.author, this.publisher
-                                , this.year, (i < desLines.length ? desLines[i] : "")
+                                        + "\t%-15s %-10s %-20s %-20s %-16s %-15s %-22s %s\n",
+                                "↳", this.id, titleLines[i].trim(), this.author, this.publisher
+                                , this.year, (i < desLines.length ? desLines[i] : "").trim()
                                         + Color.RESET, Border.starBorder());
                         firstLine = false;
                     } else {
-                        System.out.print(Border.starBorder());
-                        System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-15s %-16s %-15s %-22s %s\n",
-                                " ", " ", titleLines[i], " ", " "
-                                , " ", (i < desLines.length ? desLines[i] : "")
+                        System.out.printf(Color.WHITE_BRIGHT + "\t%-15s %-10s %-20s %-20s %-16s %-15s %-22s %s\n",
+                                " ", " ", titleLines[i].trim(), " ", " "
+                                , " ", (i < desLines.length ? desLines[i] : "").trim()
                                         + Color.RESET, Border.starBorder());
                     }
                 }
             }
         }
     }
-
 }

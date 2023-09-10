@@ -5,6 +5,7 @@ import library.interfaceentity.IEntity;
 import library.Color.Color;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 import static library.run.LibraryManagement.categoryList;
 import static library.run.LibraryManagement.scanner;
@@ -56,7 +57,7 @@ public class Category implements IEntity, Serializable {
         uniqueTypeBookName();
         statusTrueFalse();
         System.out.print(Color.GREEN +
-                "‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥\n" + Color.RESET);
+                "‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥‥\n" + Color.RESET);
 
     }
 
@@ -76,7 +77,7 @@ public class Category implements IEntity, Serializable {
                     if (categoryList.size() > 0) {
                         for (Category category : categoryList) {
                             if (category.getId() == this.id) {
-                                System.err.println("Mã bạn nhập đã tồn tại vui lòng nhập mã khác !");
+                                printErrRed("Mã bạn nhập đã tồn tại vui lòng nhập mã khác !");
                                 isExist = true;
                             }
                         }
@@ -90,23 +91,23 @@ public class Category implements IEntity, Serializable {
                     }
                 }
             } catch (NumberFormatException numberFormatException) {
-                System.err.println("Lỗi khi nhập mã id phải là số nguyên");
+                printErrRed("Lỗi khi nhập mã id phải là số nguyên");
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập mã id");
+                printErrRed("Lỗi khi nhập mã id");
             }
         } while (checkId);
     }
+
     /**
      * uniqueTypeBookName(): category name unique
      */
 
     public void uniqueTypeBookName() {
-        System.out.print("Nhập tên thể loại sách: ");
+        System.out.print("Nhập tên thể loại sách (6 - 30 kí tự): ");
         boolean checkName = true;
         do {
             try {
                 String nameCatalog = scanner.nextLine();
-//                this.name = scanner.nextLine();
                 boolean isExist = false;
                 if (nameCatalog.length() < 6 || nameCatalog.length() > 30) {
                     System.err.println("Tên thể loại phải có từ 6 - 30 kí tự");
@@ -130,7 +131,7 @@ public class Category implements IEntity, Serializable {
                     }
                 }
             } catch (Exception exception) {
-                System.err.println("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
+                printErrRed("Lỗi khi nhập đầu vào, vui lòng liên hệ hệ thống !");
             }
         } while (checkName);
     }
@@ -150,10 +151,10 @@ public class Category implements IEntity, Serializable {
                     System.out.println(Color.GREEN_BOLD_BRIGHT + "Ok ✓" + Color.RESET);
                     checkStatus = false;
                 } else {
-                    System.err.println("Trạng thái thể loại (true/false) vui lòng nhập lại:  ");
+                    printErrRed("Trạng thái thể loại (true/false) vui lòng nhập lại:  ");
                 }
             } else {
-                System.err.println("Không được để trống, Vui lòng nhập lại !");
+                printErrRed("Không được để trống, Vui lòng nhập lại !");
             }
         } while (checkStatus);
     }
@@ -162,8 +163,50 @@ public class Category implements IEntity, Serializable {
      * update(): update a catalog
      */
     public void update() {
-        uniqueTypeBookName();
-        statusTrueFalse();
+        while (true) {
+            System.out.println(Color.BLUE_BOLD_BRIGHT + "Bạn có muốn cập nhật tên thể loại sách không ?" + Color.RESET);
+            System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
+                    Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
+            try {
+                int n = Integer.parseInt(scanner.nextLine());
+                if (n == 1) {
+                    uniqueTypeBookName();
+                    break;
+                } else if (n == 2) {
+                    System.out.println(Color.YELLOW_BOLD + "Không thay đổi ◯" + Color.RESET);
+                    break;
+                } else {
+                    printErrRed("Vui lòng nhập 1 hoặc 2\n");
+                }
+            } catch (NumberFormatException nfe) {
+                printErrRed("Lỗi khi nhập kí tự không phải số !\n");
+            }
+        }
+        while (true) {
+            System.out.println(Color.BLUE_BOLD_BRIGHT + "Bạn có muốn cập nhật trạng thái sách không ?" + Color.RESET);
+            System.out.printf("\t\t%-20s %s\n", Color.RED_BACKGROUND + "1.Có" + Color.RESET,
+                    Color.GREEN_BACKGROUND + "2.Không" + Color.RESET);
+            try {
+                int n = Integer.parseInt(scanner.nextLine());
+                if (n == 1) {
+                    statusTrueFalse();
+                    break;
+                } else if (n == 2) {
+                    System.out.println(Color.YELLOW_BOLD + "Không thay đổi ◯" + Color.RESET);
+                    break;
+                } else {
+                    printErrRed("Vui lòng nhập 1 hoặc 2\n");
+                }
+            } catch (NumberFormatException nfe) {
+                printErrRed("Lỗi khi nhập kí tự không phải số !\n");
+            }
+        }
+    }
+    /**
+     * @param message print error
+     */
+    public static void printErrRed(String message) {
+        System.out.println(Color.RED + message + Color.RESET);
     }
 
     /**
@@ -171,10 +214,28 @@ public class Category implements IEntity, Serializable {
      */
     @Override
     public void output() {
-        System.out.printf(Color.WHITE_BRIGHT + "%-16d %-20s %-25s %-1s\n",
-                this.id, this.name,
-                (this.status ? "Hoạt động" : "Không hoạt động") + Color.RESET, Border.shapeBorder());
-
-
+        //format id to "0000"
+        DecimalFormat df = new DecimalFormat("0000");
+        boolean firstLine = true;
+        String longType = this.name;
+        String[] typeLines = longType.split("(?<=.{" + 15 + "})(?=\\s)", 2);
+        if (longType.length() < 16) {
+            System.out.printf(Color.WHITE_BRIGHT + "%-16s %-20s %-25s %-1s\n",
+                    df.format(this.id), typeLines[0].trim(),
+                    (this.status ? "Hoạt động" : "Không hoạt động") + Color.RESET, Border.shapeBorder());
+        } else {
+            for (String typeLine : typeLines) {
+                if (firstLine) {
+                    System.out.printf(Color.WHITE_BRIGHT + "%-16s %-20s %-25s %-1s\n",
+                            df.format(this.id), typeLine.trim(),
+                            (this.status ? "Hoạt động" : "Không hoạt động") + Color.RESET, Border.shapeBorder());
+                    firstLine = false;
+                } else {
+                    System.out.print(Border.starBorder());
+                    System.out.printf(Color.WHITE_BRIGHT + "%-9s %-16s %-20s %-25s %-1s\n",
+                            " ", " ", typeLine.trim(), " " + Color.RESET, Border.shapeBorder());
+                }
+            }
+        }
     }
 }
